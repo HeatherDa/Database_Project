@@ -47,8 +47,11 @@ def useDatabase(option):
             #val = (var[0], var[1], var[2], var[3], var[4], var[5])
             #sql = '''INSERT INTO products(itemType,itemDescription,itemVendor,itemCost,itemValue,itemQuantity) VALUES(NULL,?,?,?,?,?,?)'''
             #sql = '''INSERT INTO products VALUES(?,?,?,?,?,?,?)'''
-            c.execute("INSERT INTO products ('itemType', 'itemDescription', 'itemVendor', 'itemCost', 'itemValue', 'itemQuantity') VALUES(NULL,'{ai}','{bi}',{ci},'{di}','{ei}',{fi})"
+            print("INSERT INTO products (itemNum,'itemType', 'itemDescription', 'itemVendor', 'itemCost', 'itemValue', 'itemQuantity') VALUES('{ai}','{bi}',{ci},'{di}','{ei}',{fi})"
                       .format(ai=var[0],bi=var[1],ci=var[2],di=var[3],ei=var[4],fi=var[5]))
+            c.execute("INSERT INTO products (itemNum,'itemType', 'itemDescription', 'itemVendor', 'itemCost', 'itemValue', 'itemQuantity') VALUES(NULL,'{ai}','{bi}',{ci},'{di}','{ei}',{fi})"
+                      .format(ai=var[0],bi=var[1],ci=var[2],di=var[3],ei=var[4],fi=var[5]))
+            connect.commit()
             #c.execute("INSERT INTO products VALUES(NULL,'pet','black cat',12345,'1.11','2.22',6)")
 
             #c.execute(sql, val)
