@@ -16,21 +16,26 @@ def useDatabase(option):
     global filename
     global tableName
     columns = ['itemNum', 'itemType', 'itemDescription', 'itemVendor', 'itemExp', 'itemValue', 'itemQuantity']
-    types = ['INTEGER', 'TEXT', 'TEXT', 'INTEGER', 'TEXT', 'TEXT', 'INTEGER']
+    types = [' INTEGER', ' TEXT', ' TEXT', ' INTEGER', ' REAL', ' REAL', ' INTEGER']
     like = "LIKE '[0-9][0-9][0-9][0-9][0-9]'"
     try:
         connect = sqlite3.connect(filename)
-        c=connect.cursor()
+        #c=connect.cursor()
         if option==1:
-            c.execute('CREATE TABLE {tn}({col}{field} PRIMARY KEY)'.format(tn=tableName, col=columns[0], field=types[0]))
-            c.execute("ALTER TABLE Products ADD COLUMN 'itemType' TEXT")
-            c.execute("ALTER TABLE Products ADD COLUMN 'itemDescription' TEXT")
-            c.execute("ALTER TABLE Products ADD COLUMN 'itemVendor' INTEGER")#can't get this to work CHECK (itemVendor {c}".format (c=like))
-            c.execute("ALTER TABLE Products ADD COLUMN 'itemCost' TEXT")
-            c.execute("ALTER TABLE Products ADD COLUMN 'itemValue' TEXT")
-            c.execute("ALTER TABLE Products ADD COLUMN 'itemQuantity' INTEGER DEFAULT 0")
+            c = connect.cursor()
+            c.execute("CREATE TABLE {tn} ( 'itemNum' INTEGER PRIMARY KEY, 'itemType' TEXT, 'itemDescription' TEXT, 'itemVendor' INTEGER , 'itemCost' REAL, 'itemValue' REAL, 'itemQuantity' INTEGER DEFAULT 0)".format(tn=tableName))#, col=columns[0], field=types[0]))
+
+            c.execute("Insert INTO {tn} Values(NULL, 'sample', 'test record', 54321, 2.20, 5.01, 2)".format(tn=tableName))
+            connect.commit()
+            #c.execute("ALTER TABLE Products ADD COLUMN 'itemType' TEXT")
+            #c.execute("ALTER TABLE Products ADD COLUMN 'itemDescription' TEXT")
+            #c.execute("ALTER TABLE Products ADD COLUMN 'itemVendor' INTEGER")#can't get this to work CHECK (itemVendor {c}".format (c=like))
+            #c.execute("ALTER TABLE Products ADD COLUMN 'itemCost' TEXT")
+            #c.execute("ALTER TABLE Products ADD COLUMN 'itemValue' TEXT")
+            #c.execute("ALTER TABLE Products ADD COLUMN 'itemQuantity' INTEGER DEFAULT 0")
 
         elif option==2:
+            c = connect.cursor()
             se = input("Please type in the values for the new row separated by commas.")
             v = se.split(',')
             #v.insert(0,'NULL')
@@ -38,23 +43,33 @@ def useDatabase(option):
             for value in v:
                 a = value.strip()
                 var.append(a)
-            val = ('NULL', var[0], var[1], var[2], var[3], var[4], var[5])
+            val = (var[0], var[1], var[2], var[3], var[4], var[5])
+            #val = (var[0], var[1], var[2], var[3], var[4], var[5])
             #sql = '''INSERT INTO products(itemType,itemDescription,itemVendor,itemCost,itemValue,itemQuantity) VALUES(NULL,?,?,?,?,?,?)'''
-            sql = '''INSERT INTO products VALUES(?,?,?,?,?,?,?)'''
-            c.execute(sql, val)
+            #sql = '''INSERT INTO products VALUES(?,?,?,?,?,?,?)'''
+            c.execute("INSERT INTO products ('itemType', 'itemDescription', 'itemVendor', 'itemCost', 'itemValue', 'itemQuantity') VALUES(NULL,'{ai}','{bi}',{ci},'{di}','{ei}',{fi})"
+                      .format(ai=var[0],bi=var[1],ci=var[2],di=var[3],ei=var[4],fi=var[5]))
+            #c.execute("INSERT INTO products VALUES(NULL,'pet','black cat',12345,'1.11','2.22',6)")
+
+            #c.execute(sql, val)
             print("data entered was ", val)
         elif option==3:
+            c = connect.cursor()
             upIn=input("Please type in the item number and the new quantity separated by a comma.")
             inf=upIn.split(',')
             #This will throw an error if the item id entered does not exist
             c.execute("UPDATE {tn} SET {col}='{inp}'WHERE {itemNum}={id}".format(tn=tableName,col='itemQuantity',inp=inf[0],id=inf[1]))
         elif option==4:
+            c = connect.cursor()
             deleteRow(c,option)
         elif option==5:
+            c = connect.cursor()
             c.execute("SELECT * FROM {tn}".format(tn=tableName))
-            record=c.fetchone()
-            print('{}'.format(record))
+            records=c.fetchall()
+            for record in records:
+                print(record)
         elif option==6:
+            c = connect.cursor()
             s = input("What is the number of the item you are looking for?")
             if isInt(s) and len(s) == 5:
                 search(c, s, option)
